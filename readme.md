@@ -1,7 +1,7 @@
 # Sun-Widget-VB6
 The Steampunk Sun Desktop Widget, written in VB6 for Windows and ReactOS. Created for XP, Vista, Win7, 8, 10/11+, ReactOS as well as Linux or the Apple Mac's OS/X with Wine. This Sun Desktop Widget is an attractive and steamy VB6 widget for your desktop. This VB6 widget provides a simple moveable marble globe complete with rings
 
-![poster](https://github.com/yereverluvinunclebert/Poster-VB6-Widget/assets/2788342/e248af44-effc-4145-ba04-1a9b7ad4301a)
+![sun](https://github.com/yereverluvinunclebert/Sun-VB6-Widget/assets/2788342/f4ffdc3f-b4fd-4ebd-8389-08daa8e282ff)
 
 The others are the Uranus, Jupiter, Saturn and of course, 'God of War', the planet Mars. 
 Double-clicking on the planet will cause a personalised Windows application 
@@ -37,7 +37,7 @@ Why VB6? Well, with a 64 bit, modern-language improvement upgrade on the way in 
  This version was developed on Windows 7 using 32 bit VisualBasic 6 as a FOSS 
  project creating a WoW64 widget for the desktop.
 
-![help](https://github.com/yereverluvinunclebert/Poster-VB6-Widget/assets/2788342/b73c459e-7781-43e1-9cbb-803560c90277)
+![help](https://github.com/yereverluvinunclebert/Sun-VB6-Widget/assets/2788342/1ec59cc4-5015-4932-9afa-f75b3ecd8ee4)
 
  It is open source to allow easy configuration, bug-fixing, enhancement and 
  community contribution towards free-and-useful VB6 utilities that can be created
@@ -46,7 +46,7 @@ Why VB6? Well, with a 64 bit, modern-language improvement upgrade on the way in 
  is new VB6 widgets with more functionality and then hopefully, conversion of 
  each to RADBasic/TwinBasic for future-proofing and 64bit-ness. 
 
-![theWholeShebang](https://github.com/yereverluvinunclebert/Poster-VB6-Widget/assets/2788342/325a7f7a-c97e-49e6-9c8d-15b1da8cc8f7)
+![theWholeShebang](https://github.com/yereverluvinunclebert/Sun-VB6-Widget/assets/2788342/dee109ad-11a5-4ffb-9dfd-8db0f682f65c)
 
  This utility is one of a set of steampunk and dieselpunk widgets. That you can 
  find here on Deviantart: https://www.deviantart.com/yereverluvinuncleber/gallery
@@ -92,7 +92,8 @@ If you are just a casual user of desktop programs then simply download the SETUP
 	Windows 10 Home 64bit on AMD    
 	Windows 11 64bit on Intel  
 
-![about](https://github.com/yereverluvinunclebert/Poster-VB6-Widget/assets/2788342/06433349-4cef-4ac3-a75b-205b8b4ac973)
+![Uploading about.png…]()
+
 
  CREDITS:
  
@@ -211,7 +212,8 @@ If you are just a casual user of desktop programs then simply download the SETUP
  With regard to the commercial use of incorporated images, permission and a 
  licence would need to be obtained from the original owner and creator, ie. me.
  
-![desktop](https://github.com/yereverluvinunclebert/Poster-VB6-Widget/assets/2788342/68003c0c-db0d-4d32-b5ac-d4978f4e2935)
+![Uploading desktop.jpg…]()
+
 
 
 
