@@ -16,6 +16,8 @@ This is a simple RC/VB6 widget based upon one of my old Yahoo widgets, little mo
  
 Why VB6? Well, with a 64 bit, modern-language improvement upgrade on the way in the guise of 100% compatible TwinBasic, coupled with support for transparent PNGs via Olaf Schmidt's RC/Cairo wrapper, VB6 code has an amazing future.
 
+![planets](https://github.com/yereverluvinunclebert/Sun-VB6-Widget/assets/2788342/2a749627-490e-4d54-a71d-7228f08e09ec)
+
 ![orrery-desktop](https://github.com/yereverluvinunclebert/Jupiter-Widget/assets/2788342/38dd8b6c-32ed-4a51-9704-61b2246a9fec)
  
  The Sun widget is an attractive dieselpunk VB6 widget for your desktop. Functional and gorgeous at the same time. The graphics are my own. It is all my code with some help from the chaps at VBForums (credits given). This Widget is a moveable widget that you can move anywhere around the desktop as you require.
@@ -212,7 +214,8 @@ If you are just a casual user of desktop programs then simply download the SETUP
  With regard to the commercial use of incorporated images, permission and a 
  licence would need to be obtained from the original owner and creator, ie. me.
  
-![Uploading desktop.jpg…]()
+![desktop](https://github.com/yereverluvinunclebert/Sun-VB6-Widget/assets/2788342/08047cb8-1b4c-4355-99e2-384e0924e9ce)
+
 
 
 
