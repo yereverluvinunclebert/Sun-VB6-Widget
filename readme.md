@@ -1,5 +1,5 @@
 # Sun-Widget-VB6
-The Steampunk Sun Desktop Widget, written in VB6 for Windows and ReactOS. Created for XP, Vista, Win7, 8, 10/11+, ReactOS as well as Linux or the Apple Mac's OS/X with Wine. This Sun Desktop Widget is an attractive and steamy VB6 widget for your desktop. This VB6 widget provides a simple moveable marble globe complete with rings
+The Steampunk Sun Desktop Widget, written in VB6 for Windows and ReactOS. Created for XP, Vista, Win7, 8, 10/11+, ReactOS as well as Linux or the Apple Mac's OS/X with Wine. This Sun Desktop Widget is an attractive and steamy VB6 widget for your desktop providing a simple moveable marble globe.
 
 ![sun](https://github.com/yereverluvinunclebert/Sun-VB6-Widget/assets/2788342/f4ffdc3f-b4fd-4ebd-8389-08daa8e282ff)
 
