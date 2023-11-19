@@ -350,10 +350,12 @@ Private Sub mnuLockWidget_Click()
         mnuLockWidget.Checked = False
         gblPlPreventDragging = "0"
         planetWidget.Locked = False
+        planetPrefs.chkPreventDragging.Value = 0
     Else
         mnuLockWidget.Checked = True
         planetWidget.Locked = 1
         gblPlPreventDragging = "1"
+        planetPrefs.chkPreventDragging.Value = 1
     End If
 
     sPutINISetting softwarePlanet, "preventDragging", gblPlPreventDragging, gblPlSettingsFile
