@@ -1,17 +1,16 @@
 VERSION 5.00
-Begin VB.Form helpForm 
+Begin VB.Form helpFormOld 
    BorderStyle     =   0  'None
    Caption         =   "Form1"
-   ClientHeight    =   7710
+   ClientHeight    =   8685
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   10215
+   ClientWidth     =   10770
    ControlBox      =   0   'False
    Icon            =   "frmHelp.frx":0000
    LinkTopic       =   "Form1"
-   Picture         =   "frmHelp.frx":25CA
-   ScaleHeight     =   7710
-   ScaleWidth      =   10215
+   ScaleHeight     =   8685
+   ScaleWidth      =   10770
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Begin VB.PictureBox picHelp 
@@ -19,14 +18,14 @@ Begin VB.Form helpForm
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   7690
-      Left            =   15
-      Picture         =   "frmHelp.frx":490CA
-      ScaleHeight     =   7695
-      ScaleWidth      =   10200
+      Height          =   8685
+      Left            =   0
+      Picture         =   "frmHelp.frx":385D2
+      ScaleHeight     =   8685
+      ScaleWidth      =   10770
       TabIndex        =   0
       Top             =   0
-      Width           =   10200
+      Width           =   10770
       Begin VB.Label lblPunklabsLink 
          BackStyle       =   0  'Transparent
          Caption         =   "                                                         "
@@ -39,7 +38,7 @@ Begin VB.Form helpForm
       End
    End
 End
-Attribute VB_Name = "helpForm"
+Attribute VB_Name = "helpFormOld"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -62,7 +61,7 @@ Private Sub picHelp_Click()
     Me.Hide ' no possibility of fade out in a VB6 form
     
     fileToPlay = "ting.wav"
-    If gblPlEnableSounds = "1" And fFExists(App.Path & "\resources\sounds\" & fileToPlay) Then
+    If PzGEnableSounds = "1" And fFExists(App.Path & "\resources\sounds\" & fileToPlay) Then
         PlaySound App.Path & "\resources\sounds\" & fileToPlay, ByVal 0&, SND_FILENAME Or SND_ASYNC
     End If
    On Error GoTo 0

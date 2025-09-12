@@ -18,7 +18,7 @@ Begin VB.Form frmLicence
       BackColor       =   &H00414D38&
       Height          =   4245
       Left            =   -60
-      Picture         =   "licence.frx":25CA
+      Picture         =   "licence.frx":385D2
       ScaleHeight     =   4185
       ScaleWidth      =   5055
       TabIndex        =   0
@@ -118,9 +118,9 @@ Private Sub declineLabel_Click()
 
     MsgBox "Please uninstall and remove Steamydock" & vbCr & "from your computer."
 
-    Call planetForm_Unload
+    Call thisForm_Unload
     
-    sPutINISetting softwarePlanet, "Licence", slicence, gblPlSettingsFile
+    sPutINISetting "Software\PzJustClock", "Licence", slicence, toolSettingsFile
     End
 
    On Error GoTo 0
@@ -133,8 +133,8 @@ End Sub
 
 Private Sub Form_Load()
 
-    If gblPlPrefsFont <> vbNullString Then
-        Call changeFormFont(frmLicence, gblPlPrefsFont, Val(gblPlPrefsFontSize), 0, False, CBool(gblPlPrefsFontItalics), vbWhite)
+    If PzGPrefsFont <> vbNullString Then
+        Call changeFormFont(frmLicence, PzGPrefsFont, Val(PzGPrefsFontSize), 0, False, CBool(PzGPrefsFontItalics), vbWhite)
     End If
 
 End Sub
@@ -154,7 +154,7 @@ Private Sub Label2_Click()
     frmLicence.Hide
     slicence = "1"
     
-    sPutINISetting softwarePlanet, "Licence", slicence, gblPlSettingsFile
+    sPutINISetting "Software\PzJustClock", "Licence", slicence, PzGSettingsFile
 
    On Error GoTo 0
    Exit Sub

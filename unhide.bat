@@ -1,1 +1,1 @@
-start "" "Panzer Earth Gauge.exe" unhide
+start "" "Diesel Volume Control.exe" unhide

@@ -58,11 +58,14 @@
 ' test on win XP 32bit blank install, no RC5 at all
 ' test on ReactOS 32bit blank install, no RC5 at all
 
-' document showInTaskbar new option
-' add a debug form and debug commands
+' the help HTML
+' the help CHM
+
+' modify s2g file
+' build installer
+
 
 ' get current monitor? Add code to position the various forms on multiple monitors.
-' DPI awareness code from just Clock widget
 
 ' -oOo-
 
@@ -72,8 +75,6 @@
 ' upload the code (no setup.exe) to the VBforums codebank
 
 ' lightquick - resurrect
-
-' Deviantart for journal only. Test with rocketdock Part III HTML, create the journal blog using NVU as per the saved DA journal pt II, will be usable elsewhere.
 
 ' softpedia
 ' fosshub

@@ -1,1 +1,1 @@
-start "" "Panzer Earth Gauge.exe" prefs
+start "" "Diesel Volume Control.exe" prefs

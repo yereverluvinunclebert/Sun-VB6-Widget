@@ -11,50 +11,78 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'@IgnoreModule IntegerDataType, ModuleWithoutFolder
 '---------------------------------------------------------------------------------------
 ' Class Module      : cwAbout
 ' Author            : beededea
 ' Date              : 17/05/2023
-' Purpose           :
+' Purpose           : puts an about widget on the form
 '---------------------------------------------------------------------------------------
 
 Option Explicit
  
 Private WithEvents W As cWidgetBase '<- this is required in each cwImplementation...
 Attribute W.VB_VarHelpID = -1
-Private WithEvents tmrFadeIn As cTimer
-Attribute tmrFadeIn.VB_VarHelpID = -1
-Private WithEvents tmrFadeOut As cTimer
-Attribute tmrFadeOut.VB_VarHelpID = -1
-Private mOpacity As Double
-Private mShow As Boolean
+
+' RC timers
+
+Private WithEvents tmrAboutFadeIn As cTimer
+Attribute tmrAboutFadeIn.VB_VarHelpID = -1
+Private WithEvents tmrAboutFadeOut As cTimer
+Attribute tmrAboutFadeOut.VB_VarHelpID = -1
+
+' private members for property assignment
+
+Private mMyOpacity As Double
+Private mShowMe As Boolean
+Private mZoom As Double
+
+'local general vars used only within this class
+
 Private aboutxo As Integer
 Private aboutyo As Integer
 
-'property opacity
-'property show
+'---------------------------------------------------------------------------------------
+' Procedure : initialisePrivateVars
+' Author    : beededea
+' Date      : 12/02/2025
+' Purpose   : initialise vars
+'---------------------------------------------------------------------------------------
+'
+Private Sub initialisePrivateVars()
 
+   On Error GoTo initialisePrivateVars_Error
 
+    aboutxo = 0
+    aboutyo = 0
+
+   On Error GoTo 0
+   Exit Sub
+
+initialisePrivateVars_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure initialisePrivateVars of Class Module cwAbout"
+End Sub
 '---------------------------------------------------------------------------------------
 ' Procedure : Class_Initialize
 ' Author    : beededea
 ' Date      : 17/05/2023
-' Purpose   :
+' Purpose   : Constructor (Initialise)
 '---------------------------------------------------------------------------------------
 '
 Private Sub Class_Initialize()
 
    On Error GoTo Class_Initialize_Error
 
-    aboutxo = 0
-    aboutyo = 0
-    opacity = 0
-    show = False
-
+    Call initialisePrivateVars
+    
+    MyOpacity = 0
+    ShowMe = False
+    
     Set W = Cairo.WidgetBase '<- this is required in each cwImplementation...
-   
-    Set tmrFadeIn = New_c.Timer(20, False)
-    Set tmrFadeOut = New_c.Timer(20, False)
+       
+    Set tmrAboutFadeIn = New_c.Timer(20, False)
+    Set tmrAboutFadeOut = New_c.Timer(20, False)
 
    On Error GoTo 0
    Exit Sub
@@ -64,19 +92,108 @@ Class_Initialize_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Class_Initialize of Class Module cwAbout"
 End Sub
 
-Public Property Get Widget() As cWidgetBase: Set Widget = W: End Property
-Public Property Get Widgets() As cWidgets:  Set Widgets = W.Widgets: End Property ' does this really need to be exposed?
+'---------------------------------------------------------------------------------------
+' Procedure : Widget
+' Author    : olaf schmidt
+' Date      : 21/09/2023
+' Purpose   : An RC default property
+'---------------------------------------------------------------------------------------
+'
+Public Property Get Widget() As cWidgetBase
+   On Error GoTo Widget_Error
+
+    Set Widget = W
+
+   On Error GoTo 0
+   Exit Property
+
+Widget_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Widget of Class Module cwAbout"
+End Property
+'---------------------------------------------------------------------------------------
+' Procedure : Widgets
+' Author    : olaf schmidt
+' Date      : 21/09/2023
+' Purpose   : An RC default property
+'---------------------------------------------------------------------------------------
+'
+Public Property Get Widgets() As cWidgets
+   On Error GoTo Widgets_Error
+
+    Set Widgets = W.Widgets
+
+   On Error GoTo 0
+   Exit Property
+
+Widgets_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Widgets of Class Module cwAbout"
+End Property
+'---------------------------------------------------------------------------------------
+' Procedure : Zoom
+' Author    : beededea
+' Date      : 17/05/2023
+' Purpose   : property to determine (by value) the zoom value, it being selected by a mousewheel scroll or the slider in the prefs
+'---------------------------------------------------------------------------------------
+'
+Public Property Get Zoom() As Double
+   On Error GoTo ZoomGet_Error
+
+    Zoom = mZoom
+
+   On Error GoTo 0
+   Exit Property
+
+ZoomGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Zoom of Class Module cwAbout"
+End Property
+'---------------------------------------------------------------------------------------
+' Procedure : Zoom
+' Author    : beededea
+' Date      : 17/05/2023
+' Purpose   : property to determine (by value) the zoom value, it being selected by a mousewheel scroll or the slider in the prefs
+'---------------------------------------------------------------------------------------
+'
+Public Property Let Zoom(ByVal newValue As Double)
+   On Error GoTo ZoomLet_Error
+
+  If mZoom <> newValue Then mZoom = newValue Else Exit Property
+  If mZoom > 3 Then mZoom = 3 Else If mZoom < 0.05 Then mZoom = 0.05
+  W.Refresh
+
+   On Error GoTo 0
+   Exit Property
+
+ZoomLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Zoom of Class Module cwAbout"
+End Property
+
 '---------------------------------------------------------------------------------------
 ' Procedure : W_MouseDown
 ' Author    : beededea
 ' Date      : 17/05/2023
-' Purpose   :
+' Purpose   : Handle the click event for a click upon the widget
 '---------------------------------------------------------------------------------------
 '
-Private Sub W_MouseDown(Button As Integer, Shift As Integer, ByVal X As Single, ByVal Y As Single)
+Private Sub W_MouseDown(Button As Integer, Shift As Integer, ByVal x As Single, ByVal y As Single)
+   Dim fileToPlay As String: fileToPlay = vbNullString
    On Error GoTo W_MouseDown_Error
-
-    tmrFadeOut.Enabled = True
+    
+    ' works better here
+'    If gblVolumeBoost = "1" Then
+'        fileToPlay = "till.wav"
+'    Else
+'        fileToPlay = "till-quiet.wav"
+'    End If
+'
+    If gblEnableSounds = "1" And fFExists(App.Path & "\resources\sounds\" & fileToPlay) Then
+        playSound App.Path & "\resources\sounds\" & fileToPlay, ByVal 0&, SND_FILENAME Or SND_ASYNC
+    End If
+    
+    tmrAboutFadeOut.Enabled = True
 
    On Error GoTo 0
    Exit Sub
@@ -86,154 +203,154 @@ W_MouseDown_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure W_MouseDown of Class Module cwAbout"
 End Sub
 '---------------------------------------------------------------------------------------
-' Procedure : opacity
+' Procedure : MyOpacity
 ' Author    : beededea
 ' Date      : 17/05/2023
-' Purpose   :
+' Purpose   : property to determine (by value) the opacity value used by RenderSurfaceContent
 '---------------------------------------------------------------------------------------
 '
-Public Property Let opacity(ByVal newValue As Double)
-   On Error GoTo opacityLet_Error
+Public Property Let MyOpacity(ByVal newValue As Double)
+   On Error GoTo MyOpacityLet_Error
 
-  If mOpacity <> newValue Then mOpacity = newValue Else Exit Property
+   If mMyOpacity <> newValue Then mMyOpacity = newValue Else Exit Property
 
    On Error GoTo 0
    Exit Property
 
-opacityLet_Error:
+MyOpacityLet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure opacity of Class Module cwAbout"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure MyOpacity of Class Module cwAbout"
 End Property
 '---------------------------------------------------------------------------------------
-' Procedure : opacity
+' Procedure : MyOpacity
 ' Author    : beededea
 ' Date      : 17/05/2023
-' Purpose   :
+' Purpose   : property to determine (by value) the opacity value used by RenderSurfaceContent
 '---------------------------------------------------------------------------------------
 '
-Public Property Get opacity() As Double
-   On Error GoTo opacityGet_Error
+Public Property Get MyOpacity() As Double
+   On Error GoTo MyOpacityGet_Error
 
-  opacity = mOpacity
+   MyOpacity = mMyOpacity
 
    On Error GoTo 0
    Exit Property
 
-opacityGet_Error:
+MyOpacityGet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure opacity of Class Module cwAbout"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure MyOpacity of Class Module cwAbout"
 End Property
 
 '---------------------------------------------------------------------------------------
-' Procedure : show
+' Procedure : ShowMe
 ' Author    : beededea
 ' Date      : 17/05/2023
-' Purpose   :
+' Purpose   : property to determine (by value) that triggers a fade in timer
 '---------------------------------------------------------------------------------------
 '
-Public Property Let show(ByVal newValue As Boolean)
-    On Error GoTo showLet_Error
+Public Property Let ShowMe(ByVal newValue As Boolean)
+    On Error GoTo ShowMeLet_Error
 
-    mShow = newValue
-    If mShow = True Then tmrFadeIn.Enabled = True
+    mShowMe = newValue
+    
+    If mShowMe = True Then tmrAboutFadeIn.Enabled = True
     
     On Error GoTo 0
     Exit Property
 
-showLet_Error:
+ShowMeLet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure show of Class Module cwAbout"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ShowMe of Class Module cwAbout"
 End Property
 '---------------------------------------------------------------------------------------
-' Procedure : show
+' Procedure : ShowMe
 ' Author    : beededea
 ' Date      : 17/05/2023
-' Purpose   :
+' Purpose   : property to determine (by value) that triggers a fade in timer
 '---------------------------------------------------------------------------------------
 '
-Public Property Get show() As Boolean
-   On Error GoTo showGet_Error
+Public Property Get ShowMe() As Boolean
+   On Error GoTo ShowMeGet_Error
 
-   show = mShow
+   ShowMe = mShowMe
 
    On Error GoTo 0
    Exit Property
 
-showGet_Error:
+ShowMeGet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure show of Class Module cwAbout"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ShowMe of Class Module cwAbout"
 End Property
 
 '
 '---------------------------------------------------------------------------------------
-' Procedure : tmrFadeIn_Timer
+' Procedure : tmrAboutFadeIn_Timer
 ' Author    : beededea
 ' Date      : 17/05/2023
 ' Purpose   : timer to make the about form or about image fade in opacity
 '---------------------------------------------------------------------------------------
 '
-Private Sub tmrFadeIn_Timer()
+Private Sub tmrAboutFadeIn_Timer()
       
-   On Error GoTo tmrFadeIn_Timer_Error
-        fMain.aboutForm.show
-        opacity = opacity + 0.05
-        If opacity >= 1 Then
-            opacity = 1
+   On Error GoTo tmrAboutFadeIn_Timer_Error
+    fMain.aboutForm.Show
+    MyOpacity = MyOpacity + 0.05
+    If MyOpacity >= 1 Then
+        MyOpacity = 1
 
-            tmrFadeIn.Enabled = False
+        tmrAboutFadeIn.Enabled = False
 
-            Exit Sub
-        End If
+        Exit Sub
+    End If
     W.Refresh
 
    On Error GoTo 0
    Exit Sub
 
-tmrFadeIn_Timer_Error:
+tmrAboutFadeIn_Timer_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure tmrFadeIn_Timer of Class Module cwAbout"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure tmrAboutFadeIn_Timer of Class Module cwAbout"
 End Sub
 '
 '---------------------------------------------------------------------------------------
-' Procedure : tmrFadeOut_Timer
+' Procedure : tmrAboutFadeOut_Timer
 ' Author    : beededea
 ' Date      : 17/05/2023
 ' Purpose   : timer to make the about form or about image fade out in opacity
 '---------------------------------------------------------------------------------------
-'
-Private Sub tmrFadeOut_Timer()
-      
-   On Error GoTo tmrFadeOut_Timer_Error
-
-        opacity = opacity - 0.05
-        If opacity < 0 Then
-            opacity = 0
-
-            tmrFadeOut.Enabled = False
-            fMain.aboutForm.Hide
-
-            Exit Sub
-        End If
+Private Sub tmrAboutFadeOut_Timer()
+    On Error GoTo tmrAboutFadeOut_Timer_Error
+    
+    MyOpacity = MyOpacity - 0.05
+    
+    If MyOpacity < 0 Then
+        MyOpacity = 0
+        
+        tmrAboutFadeOut.Enabled = False
+        fMain.aboutForm.Hide
+        Exit Sub
+    End If
+    
     W.Refresh
 
    On Error GoTo 0
    Exit Sub
 
-tmrFadeOut_Timer_Error:
+tmrAboutFadeOut_Timer_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure tmrFadeOut_Timer of Class Module cwAbout"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure tmrAboutFadeOut_Timer of Class Module cwAbout"
 End Sub
 '---------------------------------------------------------------------------------------
 ' Procedure : W_Paint
 ' Author    : beededea
 ' Date      : 17/05/2023
-' Purpose   :
+' Purpose   : Default RC paint routine
 '---------------------------------------------------------------------------------------
 '
 Private Sub W_Paint(CC As vbRichClient5.cCairoContext, ByVal xAbs As Single, ByVal yAbs As Single, ByVal dx_Aligned As Single, ByVal dy_Aligned As Single, UserObj As Object)
    On Error GoTo W_Paint_Error
 
-    Draw CC, dx_Aligned, dy_Aligned, mOpacity
+    Draw CC, dx_Aligned, dy_Aligned, mMyOpacity
 
    On Error GoTo 0
    Exit Sub
@@ -247,21 +364,40 @@ End Sub
 ' Procedure : Draw
 ' Author    : beededea
 ' Date      : 17/05/2023
-' Purpose   :
+' Purpose   : Draw routine called by W_PAINT
 '---------------------------------------------------------------------------------------
 '
-Private Sub Draw(ByRef CC As cCairoContext, ByVal dx As Single, ByVal dy As Single, ByVal mOpacity As Double)
-   On Error GoTo Draw_Error
-
-    CC.RenderSurfaceContent "about", aboutxo, aboutyo, , , , mOpacity
+Private Sub Draw(ByRef CC As cCairoContext, ByVal dx As Single, ByVal dy As Single, ByVal mMyOpacity As Double)
+    On Error GoTo Draw_Error
+  
+    CC.ScaleDrawings mZoom, mZoom
+    
+    If gblRichClientEnvironment = "RC6" Then
+        ' Widgets are refreshed "from the ground up" in RC5 and not so in RC6
+        ' extra code NOT needed when using RC5 but now required in RC6 - starts
+        CC.Operator = CAIRO_OPERATOR_CLEAR
+        CC.Paint 'clear the whole background of this Widgets underlying Surface via Clear-Operator
+        CC.Operator = CAIRO_OPERATOR_OVER 'switch back to the default-Operator
+        ' extra code not needed when using RC5 but now required in RC6 - ends
+    End If
+    
+    CC.RenderSurfaceContent "about", aboutxo, aboutyo, , , , mMyOpacity
         
     'set some Font- and ForeColor-Properties and draw some Text on the Widget
-    W.FontItalic = True
-    W.FontName = gblPlPrefsFont
+    W.FontItalic = False
+    W.FontName = gblWidgetFont
     W.ForeColor = vbBlack
+    W.FontBold = True
+    W.FontSize = 9
+
     W.SelectFontSettingsInto CC
     
-    CC.DrawText 0, 0, dx + 350, dy - 390, "                                                                                                                            version " & App.Major & "." & App.Minor & "." & App.Revision & vbNullString, , , 2, True, , mOpacity
+    If gblDpiAwareness = "0" Then
+        CC.DrawText 80, 110, dx, dy - 275, gblCodingEnvironment & "/" & gblRichClientEnvironment & " " & "version " & App.Major & "." & App.Minor & "." & App.Revision & " beta", , , 2, True, , mMyOpacity
+    Else
+        CC.DrawText 80, 120, dx, dy - 1050, gblCodingEnvironment & "/" & gblRichClientEnvironment & " " & "version " & App.Major & "." & App.Minor & "." & App.Revision & " beta", , , 2, True, , mMyOpacity
+    End If
+    W.Refresh
 
    On Error GoTo 0
    Exit Sub
@@ -271,4 +407,28 @@ Draw_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Draw of Class Module cwAbout"
 
 End Sub
+
+
+
+
+' the following global variables are used in this class, I should replace each with a property and use that locally
+' but I don't think I can be bothered, there are too many of them. This is my code and the widget class is not going
+' to have multiple instances running so it does not really matter. If you want to convert each of these to property GET/LETs
+' then please feel free to work your way through this list.
+
+' gblVolumeBoost
+' gblEnableSounds
+
+
+
+
+
+'\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+'  --- All folded content will be temporary put under this lines ---
+'/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+'CODEFOLD STORAGE:
+'CODEFOLD STORAGE END:
+'\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+'--- If you're Subclassing: Move the CODEFOLD STORAGE up as needed ---
+'/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 

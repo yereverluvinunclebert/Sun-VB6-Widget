@@ -17,59 +17,65 @@ Begin VB.Form menuForm
    Begin VB.Menu mnuMainMenu 
       Caption         =   "mainmenu"
       Begin VB.Menu mnuAbout 
-         Caption         =   "About Sun Cairo widget"
+         Caption         =   "About TenShillings Cairo widget"
       End
       Begin VB.Menu mnuBlank5 
          Caption         =   "-"
       End
       Begin VB.Menu mnuProgramPreferences 
-         Caption         =   "Widget Preferences"
+         Caption         =   "Widget Preferences ..."
       End
       Begin VB.Menu mnublank1 
          Caption         =   "-"
       End
       Begin VB.Menu mnuCoffee 
-         Caption         =   "Donate a coffee with KoFi"
+         Caption         =   "Donate a coffee with KoFi ..."
          Index           =   2
       End
       Begin VB.Menu blank7 
          Caption         =   ""
       End
       Begin VB.Menu mnuHelpSplash 
-         Caption         =   "Sun One-Page Help"
+         Caption         =   "TenShillings One Page Help"
       End
       Begin VB.Menu mnuOnline 
-         Caption         =   "Online Help and other options"
+         Caption         =   "Online Help and other options ..."
          Begin VB.Menu mnuWidgets 
-            Caption         =   "See the other widgets"
+            Caption         =   "See the other widgets ..."
+         End
+         Begin VB.Menu mnuGithubHome 
+            Caption         =   "Github Home for this widget ..."
          End
          Begin VB.Menu mnuLatest 
-            Caption         =   "Download Latest Version from Github"
+            Caption         =   "Download Latest Version from Github ..."
          End
          Begin VB.Menu mnuSupport 
-            Caption         =   "Contact Support"
+            Caption         =   "Contact Support ..."
          End
          Begin VB.Menu mnuFacebook 
-            Caption         =   "Chat about the widget on Facebook"
+            Caption         =   "Chat about the widget on Facebook ..."
          End
          Begin VB.Menu mnuHelpHTM 
-            Caption         =   "Open Help CHM"
+            Caption         =   "Open Help CHM ..."
          End
       End
       Begin VB.Menu mnuLicence 
-         Caption         =   "Display Licence Agreement"
+         Caption         =   "Display Licence Agreement ..."
       End
       Begin VB.Menu blank2 
          Caption         =   ""
       End
       Begin VB.Menu mnuAppFolder 
-         Caption         =   "Reveal Widget in Windows Explorer"
+         Caption         =   "Reveal Widget in Windows Explorer ..."
       End
       Begin VB.Menu blank4 
          Caption         =   ""
       End
-      Begin VB.Menu menuRestart 
-         Caption         =   "Reload Widget (F5)"
+      Begin VB.Menu menuReload 
+         Caption         =   "Reload Widget (F5 or Shift+F5 for hard restart)"
+      End
+      Begin VB.Menu blank9 
+         Caption         =   ""
       End
       Begin VB.Menu mnuEditWidget 
          Caption         =   "Edit Widget using..."
@@ -89,6 +95,9 @@ Begin VB.Form menuForm
       Begin VB.Menu mnuHideWidget 
          Caption         =   "Hide Widget"
       End
+      Begin VB.Menu blank12 
+         Caption         =   ""
+      End
       Begin VB.Menu mnuQuit 
          Caption         =   "Close Widget"
       End
@@ -99,14 +108,44 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'---------------------------------------------------------------------------------------
+' Module    : menuForm
+' Author    : beededea
+' Date      : 26/01/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+
+'@IgnoreModule ModuleWithoutFolder
 
 Option Explicit
+
+'---------------------------------------------------------------------------------------
+' Procedure : blank12_Click
+' Author    : beededea
+' Date      : 20/02/2025
+' Purpose   : Accidental clicking on a blank menu item next to the close widget menu item
+'---------------------------------------------------------------------------------------
+'
+Private Sub blank12_Click()
+   On Error GoTo blank12_Click_Error
+
+    Call thisForm_Unload
+
+   On Error GoTo 0
+   Exit Sub
+
+blank12_Click_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure blank12_Click of Form menuForm"
+End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : Form_Load
 ' Author    : beededea
 ' Date      : 07/04/2020
-' Purpose   : The main dock won't take a menu when using GDI so we have a separate form for the menu
+' Purpose   : We have a separate form for the right click menu. We do not need an on-form menu for the
+'               various RC6 forms so a native VB6 menu will do. It looks good in any case as it is
+'               merely replicating the Yahoo widget menu.
 '---------------------------------------------------------------------------------------
 '
 Private Sub Form_Load()
@@ -130,33 +169,76 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : menuRestart_Click
+' Procedure : menuReload_Click
 ' Author    : beededea
 ' Date      : 03/05/2023
-' Purpose   :
+' Purpose   : reload via the menu
 '---------------------------------------------------------------------------------------
 '
-Private Sub menuRestart_Click()
+Private Sub menuReload_Click()
+    Dim answer As VbMsgBoxResult: answer = vbNo
+    Dim answerMsg As String: answerMsg = vbNullString
 
-    On Error GoTo menuRestart_Click_Error
-   
-    Call reloadWidget
-
+    On Error GoTo menuReload_Click_Error
+    
+    answer = vbYes
+    answerMsg = "Performing a hard restart now, press OK."
+        
+    If gblSHIFT_1 = True Then
+        gblSHIFT_1 = False
+        answer = msgBoxA(answerMsg, vbExclamation + vbOK, "Performing a hard restart", True, "menuReloadClick")
+        
+        Call hardRestart
+    Else
+        Call reloadProgram
+    End If
+    
     On Error GoTo 0
     Exit Sub
 
-menuRestart_Click_Error:
+menuReload_Click_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure menuRestart_Click of Form menuForm"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure menuReload_Click of Form menuForm"
 End Sub
 
       
+
+
+
+' ----------------------------------------------------------------
+' Procedure Name: menuSpawn_Click
+' Purpose:
+' Procedure Kind: Sub
+' Procedure Access: Private
+' Author: beededea
+' Date: 15/01/2024
+' ----------------------------------------------------------------
+Private Sub menuSpawn_Click()
+    On Error GoTo menuSpawn_Click_Error
+    Dim thisCommand As String: thisCommand = vbNullString
+
+    thisCommand = App.Path & "\" & App.EXEName & ".exe"
+    
+    If fFExists(thisCommand) Then
+        Call Shell(thisCommand, vbNormalFocus)
+    Else
+        MsgBox "Having a bit of a problem opening the path for this widget - " & thisCommand & " It doesn't seem to exist or is inaccessible."
+    End If
+    
+    On Error GoTo 0
+    Exit Sub
+
+menuSpawn_Click_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure menuSpawn_Click, line " & Erl & "."
+
+End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuAppFolder_Click
 ' Author    : beededea
 ' Date      : 05/05/2023
-' Purpose   :
+' Purpose   : menu item to reveal the widget's app folder
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAppFolder_Click()
@@ -168,11 +250,11 @@ Private Sub mnuAppFolder_Click()
     folderPath = App.Path
     If fDirExists(folderPath) Then ' if it is a folder already
 
-        execStatus = ShellExecute(Me.hwnd, "open", folderPath, vbNullString, vbNullString, 1)
+        execStatus = ShellExecute(Me.hWnd, "open", folderPath, vbNullString, vbNullString, 1)
         If execStatus <= 32 Then MsgBox "Attempt to open folder failed."
     Else
-        MsgBox "Having a bit of a problem opening a folder for this widget - " & folderPath & " It doesn't seem to have a valid working directory set.", "planet Widget Confirmation Message", vbOKOnly + vbExclamation
-        'MessageBox Me.hWnd, "Having a bit of a problem opening a folder for that command - " & sCommand & " It doesn't seem to have a valid working directory set.", "planet Gauge Confirmation Message", vbOKOnly + vbExclamation
+        MsgBox "Having a bit of a problem opening a folder for this widget - " & folderPath & " It doesn't seem to have a valid working directory set.", "Sun Widget Confirmation Message", vbOKOnly + vbExclamation
+        'MessageBox Me.hWnd, "Having a bit of a problem opening a folder for that command - " & sCommand & " It doesn't seem to have a valid working directory set.", "Sun Widget Confirmation Message", vbOKOnly + vbExclamation
     End If
 
    On Error GoTo 0
@@ -186,32 +268,11 @@ End Sub
 
 
 
-
-
-
-
-
-Private Sub mnublank1_Click()
-    'Call mnuAbout_Click
-End Sub
-
-Private Sub mnuBlank2_Click()
-    'Call mnuIconSettings_Click_Event
-End Sub
-
-Private Sub mnublnk_Click()
-    'Call mnusettings_Click
-End Sub
-
-
-
-
-
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuEditWidget_Click
 ' Author    : beededea
 ' Date      : 05/05/2023
-' Purpose   :
+' Purpose   : menu item to open the VB6/TwinBasic IDE depending upon the editing environment, either the VBP or .TWINPROJ files
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuEditWidget_Click()
@@ -220,16 +281,21 @@ Private Sub mnuEditWidget_Click()
     
    On Error GoTo mnuEditWidget_Click_Error
 
-    editorPath = gblPlDefaultEditor
+    #If TWINBASIC Then
+        editorPath = gblDefaultTBEditor
+    #Else
+        editorPath = gblDefaultVB6Editor
+    #End If
+    
     If fFExists(editorPath) Then ' if it is a folder already
-        '''If debugflg = 1  Then msgBox "ShellExecute " & sCommand
+        '''If gblDebugFlg = 1  Then msgBox "ShellExecute " & sCommand
         
         ' run the selected program
-        execStatus = ShellExecute(Me.hwnd, "open", editorPath, vbNullString, vbNullString, 1)
+        execStatus = ShellExecute(Me.hWnd, "open", editorPath, vbNullString, vbNullString, 1)
         If execStatus <= 32 Then MsgBox "Attempt to open the IDE for this widget failed."
     Else
-        MsgBox "Having a bit of a problem opening an IDE for this widgt - " & editorPath & " It doesn't seem to have a valid working directory set.", "planet Widget Confirmation Message", vbOKOnly + vbExclamation
-        'MessageBox Me.hWnd, "Having a bit of a problem opening a folder for that command - " & sCommand & " It doesn't seem to have a valid working directory set.", "planet Widget Confirmation Message", vbOKOnly + vbExclamation
+        MsgBox "Having a bit of a problem opening an IDE for this widget - " & editorPath & " It doesn't seem to have a valid working directory set."
+        'MessageBox Me.hWnd, "Having a bit of a problem opening a folder for that command - " & sCommand & " It doesn't seem to have a valid working directory set.", "Sun Widget Confirmation Message", vbOKOnly + vbExclamation
     End If
 
    On Error GoTo 0
@@ -244,19 +310,50 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
+' Procedure : mnuGithubHome_Click
+' Author    : beededea
+' Date      : 18/10/2024
+' Purpose   : menu item to open the github HTML page
+'---------------------------------------------------------------------------------------
+'
+Public Sub mnuGithubHome_Click()
+
+    Dim answer As VbMsgBoxResult: answer = vbNo
+    Dim answerMsg As String: answerMsg = vbNullString
+
+    On Error GoTo mnuGithubHome_Click_Error
+    
+    answer = vbYes
+
+    answerMsg = "This button opens a browser window and connects to the widget's HOME page on github. Proceed?"
+    answer = msgBoxA(answerMsg, vbExclamation + vbYesNo, "Request to Upgrade", True, "mnuGithubHomeClick")
+
+    If answer = vbYes Then
+        Call ShellExecute(Me.hWnd, "Open", "https://github.com/yereverluvinunclebert/Sun-" & gblRichClientEnvironment & "-Widget-" & gblCodingEnvironment, vbNullString, App.Path, 1)
+    End If
+
+   On Error GoTo 0
+   Exit Sub
+
+mnuGithubHome_Click_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuGithubHome_Click of Form menuForm"
+End Sub
+
+'---------------------------------------------------------------------------------------
 ' Procedure : mnuHelpHTM_Click
 ' Author    : beededea
 ' Date      : 14/05/2023
-' Purpose   :
+' Purpose   : menu item to open the help compiled HTML file
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuHelpHTM_Click()
     On Error GoTo mnuHelpHTM_Click_Error
 
         If fFExists(App.Path & "\help\Help.chm") Then
-            Call ShellExecute(Me.hwnd, "Open", App.Path & "\help\Help.chm", vbNullString, App.Path, 1)
+            Call ShellExecute(Me.hWnd, "Open", App.Path & "\help\Help.chm", vbNullString, App.Path, 1)
         Else
-            MsgBox ("The help file - planet.html.html- is missing from the help folder.")
+            MsgBox ("The help file - Help.chm - is missing from the help folder.")
         End If
 
    On Error GoTo 0
@@ -269,57 +366,50 @@ End Sub
 
 
 
+
+
 '---------------------------------------------------------------------------------------
-' Procedure : mnuHelpPdf_Click
+' Procedure : mnuHelpSplash_Click
 ' Author    : beededea
-' Date      : 14/05/2023
-' Purpose   :
+' Date      : 03/08/2023
+' Purpose   : menu item to open display the splash bitmap
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuHelpSplash_Click()
+   On Error GoTo mnuHelpSplash_Click_Error
 
-
-    Dim fileToPlay As String: fileToPlay = vbNullString
-    On Error GoTo mnuHelpPdf_Click_Error
-
-    fileToPlay = "till.wav"
-    If gblPlEnableSounds = "1" And fFExists(App.Path & "\resources\sounds\" & fileToPlay) Then
-        PlaySound App.Path & "\resources\sounds\" & fileToPlay, ByVal 0&, SND_FILENAME Or SND_ASYNC
-    End If
-    
-    helpForm.Top = (screenHeightTwips / 2) - (helpForm.Height / 2)
-    helpForm.Left = (screenWidthTwips / 2) - (helpForm.Width / 2)
-     
-    helpForm.show
-    
-     If (helpForm.WindowState = 1) Then
-         helpForm.WindowState = 0
-     End If
+    Call helpSplash
 
    On Error GoTo 0
    Exit Sub
 
-mnuHelpPdf_Click_Error:
+mnuHelpSplash_Click_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuHelpPdf_Click of Form menuForm"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuHelpSplash_Click of Form menuForm"
+
 End Sub
+
+
+
+
+
 
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuHideWidget_Click
 ' Author    : beededea
 ' Date      : 14/05/2023
-' Purpose   :
+' Purpose   : menu item to hide the main widget form
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuHideWidget_Click()
     On Error GoTo mnuHideWidget_Click_Error
        
-    planetWidget.Hidden = True
-    
+    'SunWidget.Hidden = True
+    SunWidget.Hidden = True
     frmTimer.revealWidgetTimer.Enabled = True
-    gblPlWidgetHidden = "1"
+    gblWidgetHidden = "1"
     ' we have to save the value here
-    sPutINISetting softwarePlanet, "widgetHidden", gblPlWidgetHidden, gblPlSettingsFile
+    sPutINISetting "Software\Sun", "widgetHidden", gblWidgetHidden, gblSettingsFile
 
    On Error GoTo 0
    Exit Sub
@@ -333,32 +423,14 @@ End Sub
 ' Procedure : mnuLockWidget_Click
 ' Author    : beededea
 ' Date      : 05/05/2023
-' Purpose   :
+' Purpose   : menu item to lock the widgetForm in place
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuLockWidget_Click()
-    Dim fileToPlay As String: fileToPlay = vbNullString
 
     On Error GoTo mnuLockWidget_Click_Error
-
-    fileToPlay = "lock.wav"
-    If gblPlEnableSounds = "1" And fFExists(App.Path & "\resources\sounds\" & fileToPlay) Then
-        PlaySound App.Path & "\resources\sounds\" & fileToPlay, ByVal 0&, SND_FILENAME Or SND_ASYNC
-    End If
     
-    If gblPlPreventDragging = "1" Then
-        mnuLockWidget.Checked = False
-        gblPlPreventDragging = "0"
-        planetWidget.Locked = False
-        planetPrefs.chkPreventDragging.Value = 0
-    Else
-        mnuLockWidget.Checked = True
-        planetWidget.Locked = 1
-        gblPlPreventDragging = "1"
-        planetPrefs.chkPreventDragging.Value = 1
-    End If
-
-    sPutINISetting softwarePlanet, "preventDragging", gblPlPreventDragging, gblPlSettingsFile
+    Call toggleWidgetLock
 
    On Error GoTo 0
    Exit Sub
@@ -369,17 +441,20 @@ mnuLockWidget_Click_Error:
 
 End Sub
 
+
+
+
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuProgramPreferences_Click
 ' Author    : beededea
 ' Date      : 07/05/2023
-' Purpose   :
+' Purpose   : menu item to lock the widgetForm in place on the desktop
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuProgramPreferences_Click()
     
     On Error GoTo mnuProgramPreferences_Click_Error
-
+    
     Call makeProgramPreferencesAvailable
 
     On Error GoTo 0
@@ -399,14 +474,14 @@ End Sub
 ' Procedure : mnuQuit_Click
 ' Author    : beededea
 ' Date      : 07/04/2020
-' Purpose   :
+' Purpose   : menu item to quit the program altogether
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuQuit_Click()
 
     On Error GoTo mnuQuit_Click_Error
     
-    Call planetForm_Unload
+    Call thisForm_Unload
 
    On Error GoTo 0
    Exit Sub
@@ -425,7 +500,8 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuCoffee_Click(Index As Integer)
-
+    On Error GoTo mnuCoffee_Click_Error
+    
     Call mnuCoffee_ClickEvent
 
     On Error GoTo 0
@@ -442,18 +518,22 @@ End Sub
 ' Procedure : mnuFacebook_Click
 ' Author    : beededea
 ' Date      : 14/02/2019
-' Purpose   :
+' Purpose   : menu item to open the FB HTML page
 '---------------------------------------------------------------------------------------
 '
 Public Sub mnuFacebook_Click()
-    Dim answer As VbMsgBoxResult
-
+    Dim answer As VbMsgBoxResult: answer = vbNo
+    Dim answerMsg As String: answerMsg = vbNullString
+    
     On Error GoTo mnuFacebook_Click_Error
-    '''If debugflg = 1  Then msgBox "%" & "mnuFacebook_Click"
+    
+    answer = vbYes
 
-    answer = MsgBox("Visiting the Facebook chat page - this button opens a browser window and connects to our Facebook chat page. Proceed?", vbExclamation + vbYesNo)
+    answerMsg = "Visiting the Facebook chat page - this button opens a browser window and connects to our Facebook chat page. Proceed?"
+    answer = msgBoxA(answerMsg, vbExclamation + vbYesNo, "Visit Facebook Request", True, "mnuFacebookClick")
+    'answer = MsgBox("Visiting the Facebook chat page - this button opens a browser window and connects to our Facebook chat page. Proceed?", vbExclamation + vbYesNo)
     If answer = vbYes Then
-        Call ShellExecute(Me.hwnd, "Open", "http://www.facebook.com/profile.php?id=100012278951649", vbNullString, App.Path, 1)
+        Call ShellExecute(Me.hWnd, "Open", "http://www.facebook.com/profile.php?id=100012278951649", vbNullString, App.Path, 1)
     End If
 
     On Error GoTo 0
@@ -470,21 +550,23 @@ End Sub
 ' Procedure : mnuLatest_Click
 ' Author    : beededea
 ' Date      : 13/02/2019
-' Purpose   :
+' Purpose   : menu item to open the Github HTML page for the widget release page
 '---------------------------------------------------------------------------------------
 '
 Public Sub mnuLatest_Click()
     Dim answer As VbMsgBoxResult: answer = vbNo
+    Dim answerMsg As String: answerMsg = vbNullString
 
     On Error GoTo mnuLatest_Click_Error
-    '''If debugflg = 1  Then msgBox "%" & "mnuLatest_Click"
+    '''If gblDebugFlg = 1  Then msgBox "%" & "mnuLatest_Click"
     
-    'MsgBox "The download menu option is not yet enabled."
+    answer = vbYes
 
-    answer = MsgBox("Download latest version of the program from github - this button opens a browser window and connects to the widget download page where you can check and download the latest SETUP.EXE file). Proceed?", vbExclamation + vbYesNo)
+    answerMsg = "Download latest version of the program from github - this button opens a browser window and connects to the widget releases page where you can download the latest installer. Proceed?"
+    answer = msgBoxA(answerMsg, vbExclamation + vbYesNo, "Request to Upgrade", True, "mnuLatestClick")
 
     If answer = vbYes Then
-        Call ShellExecute(Me.hwnd, "Open", "https://github.com/yereverluvinunclebert/Sun-VB6-Widget/raw/main/Setup.exe", vbNullString, App.Path, 1)
+        Call ShellExecute(Me.hWnd, "Open", "https://github.com/yereverluvinunclebert/Sun-" & gblRichClientEnvironment & "-Widget-" & gblCodingEnvironment & "/releases", vbNullString, App.Path, 1)
     End If
 
 
@@ -501,12 +583,11 @@ End Sub
 ' Procedure : mnuLicence_Click
 ' Author    : beededea
 ' Date      : 14/02/2019
-' Purpose   :
+' Purpose   : menu item to open the licence form
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuLicence_Click()
     On Error GoTo mnuLicence_Click_Error
-    '''If debugflg = 1  Then msgBox "%" & "mnuLicence_Click"
         
     Call mnuLicence_ClickEvent
 
@@ -525,7 +606,7 @@ End Sub
 ' Procedure : mnuSupport_Click
 ' Author    : beededea
 ' Date      : 13/02/2019
-' Purpose   :
+' Purpose   : menu item to open the issues page on github
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuSupport_Click()
@@ -542,50 +623,47 @@ mnuSupport_Click_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuSupport_Click of form menuForm"
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : mnuSweets_Click
-' Author    : beededea
-' Date      : 13/02/2019
-' Purpose   :
-'---------------------------------------------------------------------------------------
+''---------------------------------------------------------------------------------------
+'' Procedure : mnuSweets_Click
+'' Author    : beededea
+'' Date      : 13/02/2019
+'' Purpose   :
+''---------------------------------------------------------------------------------------
+''
+'Private Sub mnuSweets_Click()
+'    Dim answer As VbMsgBoxResult: answer = vbNo
+'    Dim answerMsg As String: answerMsg = vbNullString
 '
-Private Sub mnuSweets_Click()
-    Dim answer As VbMsgBoxResult
-
-    On Error GoTo mnuSweets_Click_Error
-       '''If debugflg = 1  Then msgBox "%" & "mnuSweets_Click"
-    
-    answer = MsgBox(" Help support the creation of more widgets like this. Buy me a Kofi! This button opens a browser window and connects to Kofi donation page). Will you be kind and proceed?", vbExclamation + vbYesNo)
-
-    If answer = vbYes Then
-        Call ShellExecute(Me.hwnd, "Open", "https://www.ko-fi.com/yereverluvinunclebert", vbNullString, App.Path, 1)
-    End If
-    
-    On Error GoTo 0
-    Exit Sub
-
-mnuSweets_Click_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuSweets_Click of form menuForm"
-End Sub
+'    On Error GoTo mnuSweets_Click_Error
+'    answer = vbYes
+'    answerMsg = " Help support the creation of more widgets like this. Buy me a Kofi! This button opens a browser window and connects to Kofi donation page). Will you be kind and proceed?"
+'    answer = msgBoxA(answerMsg, vbExclamation + vbYesNo, "Request to Donate a Kofi", True, "mnuSweetsClick")
+'    'answer = MsgBox(" Help support the creation of more widgets like this. Buy me a Kofi! This button opens a browser window and connects to Kofi donation page). Will you be kind and proceed?", vbExclamation + vbYesNo)
+'
+'    If answer = vbYes Then
+'        Call ShellExecute(Me.hwnd, "Open", "https://www.ko-fi.com/yereverluvinunclebert", vbNullString, App.path, 1)
+'    End If
+'
+'    On Error GoTo 0
+'    Exit Sub
+'
+'mnuSweets_Click_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuSweets_Click of form menuForm"
+'End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuSwitchOff_Click
 ' Author    : beededea
 ' Date      : 05/05/2023
-' Purpose   :
+' Purpose   : menu item to switch off all of the program's functions
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuSwitchOff_Click()
    On Error GoTo mnuSwitchOff_Click_Error
 
-    ' planetWidget.Rotating = False
-    mnuSwitchOff.Checked = True
-    mnuTurnFunctionsOn.Checked = False
+    Call SwitchOff
     
-    gblPlGaugeFunctions = "0"
-    sPutINISetting softwarePlanet, "gaugeFunctions", gblPlGaugeFunctions, gblPlSettingsFile
-
    On Error GoTo 0
    Exit Sub
 
@@ -595,29 +673,20 @@ mnuSwitchOff_Click_Error:
 
 End Sub
 
+
+
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuTurnFunctionsOn_Click
 ' Author    : beededea
 ' Date      : 05/05/2023
-' Purpose   :
+' Purpose   : menu item to switch on all of the program's functions
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuTurnFunctionsOn_Click()
-    Dim fileToPlay As String: fileToPlay = vbNullString
-    On Error GoTo mnuTurnFunctionsOn_Click_Error
+   On Error GoTo mnuTurnFunctionsOn_Click_Error
 
-    fileToPlay = "ting.wav"
-    If gblPlEnableSounds = "1" And fFExists(App.Path & "\resources\sounds\" & fileToPlay) Then
-        PlaySound App.Path & "\resources\sounds\" & fileToPlay, ByVal 0&, SND_FILENAME Or SND_ASYNC
-    End If
-
-    ' planetWidget.Rotating = True
-    mnuSwitchOff.Checked = False
-    mnuTurnFunctionsOn.Checked = True
-    
-    gblPlGaugeFunctions = "1"
-    sPutINISetting softwarePlanet, "gaugeFunctions", gblPlGaugeFunctions, gblPlSettingsFile
-
+   Call TurnFunctionsOn
+   
    On Error GoTo 0
    Exit Sub
 
@@ -626,25 +695,30 @@ mnuTurnFunctionsOn_Click_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuTurnFunctionsOn_Click of Form menuForm"
 End Sub
 
+
+
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuWidgets_Click
 ' Author    : beededea
 ' Date      : 13/02/2019
-' Purpose   :
+' Purpose   : menu item to open the deviantart widgets page
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuWidgets_Click()
-    Dim answer As VbMsgBoxResult
-
+    Dim answer As VbMsgBoxResult: answer = vbNo
+    Dim answerMsg As String: answerMsg = vbNullString
+    
     On Error GoTo mnuWidgets_Click_Error
-    '''If debugflg = 1  Then msgBox "%" & "mnuWidgets_Click"
+    answer = vbYes
 
-    answer = MsgBox(" This button opens a browser window and connects to the Steampunk widgets page on my site. Do you wish to proceed?", vbExclamation + vbYesNo)
+    answerMsg = " This button opens a browser window and connects to the Steampunk widgets page on my site. Do you wish to proceed?"
+    answer = msgBoxA(answerMsg, vbExclamation + vbYesNo, "Request to connect to Steampunk widgets", True, "mnuWidgetsClick")
+    'answer = MsgBox(" This button opens a browser window and connects to the Steampunk widgets page on my site. Do you wish to proceed?", vbExclamation + vbYesNo)
 
     If answer = vbYes Then
-        Call ShellExecute(Me.hwnd, "Open", "https://www.deviantart.com/yereverluvinuncleber/gallery/59981269/yahoo-widgets", vbNullString, App.Path, 1)
+        Call ShellExecute(Me.hWnd, "Open", "https://www.deviantart.com/yereverluvinuncleber/gallery/59981269/yahoo-widgets", vbNullString, App.Path, 1)
     End If
-
+    
     On Error GoTo 0
     Exit Sub
 
@@ -658,13 +732,13 @@ End Sub
 ' Procedure : mnuAbout_Click
 ' Author    : beededea
 ' Date      : 13/02/2019
-' Purpose   :
+' Purpose   : menu item to open the about form
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAbout_Click()
     
     On Error GoTo mnuAbout_Click_Error
-
+    
     Call aboutClickEvent
 
     On Error GoTo 0
@@ -675,9 +749,3 @@ mnuAbout_Click_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAbout_Click of form menuForm"
 End Sub
 
-'Private Sub TimerMenu_Timer()
-'    TimerMenu.Enabled = False
-'    'Me.PopupMenu mnuMainMenu
-'    Call menuForm.PopupMenu(menuForm.mnuMainMenu)
-'
-'End Sub
