@@ -1904,19 +1904,42 @@ Public Sub mainScreen()
     ' calculate the on screen widget's solid visible portion's X position in relation to the right screen edge
     Call checkScreenEdgeRight
 
+    ' calculate the on screen widget's solid visible portion's X position in relation to the bottom screen edge
+    Call checkScreenEdgeBottom
+
+    ' calculate the current hlocation in % of the screen
+    ' store the current hlocation in % of the screen
+    If gblWidgetPosition = "1" Then
+        gblhLocationPercPrefValue = CStr(fMain.SunForm.Left / gblVirtualScreenWidthPixels * 100)
+        gblvLocationPercPrefValue = CStr(fMain.SunForm.Top / gblVirtualScreenHeightPixels * 100)
+    End If
+
+   On Error GoTo 0
+   Exit Sub
+
+mainScreen_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mainScreen of Module Module1"
+
+End Sub
+
 '
-'    ' calculate the on screen widget's solid visible portion's Y position in relation to the bottom screen edge
-'    If (fMain.SunForm.Top + fMain.SunForm.Height) > gblVirtualScreenHeightPixels Then  ' if any part of the form is off screen
-'        widgetCurrentHeightPx = (SunWidget.Widget.Height / 2 * SunWidget.Zoom) ' pixels
-'        formMidPointY = (fMain.SunForm.Height / 2) + fMain.SunForm.Top
-'        widgetTopY = formMidPointY - widgetCurrentHeightPx / 2
-'        screenEdge = 100 ' pixels from the edge
+'---------------------------------------------------------------------------------------
+' Procedure : checkScreenEdgeBottom
+' Author    : beededea
+' Date      : 14/09/2025
+' Purpose   : calculate the on screen widget's solid visible portion's X position in relation to the bottom screen edge
+'---------------------------------------------------------------------------------------
 '
-'        ' if the widget itself is close to the bottom of the screen then reposition it back on screen
-'        If widgetTopY >= screenEdge Then
-'            'fMain.SunForm.Top = formMidPointY - widgetTopY - screenEdge
-'        End If
-'    End If
+Private Sub checkScreenEdgeBottom()
+
+    Dim widgetCurrentHeightPx As Long: widgetCurrentHeightPx = 0
+    Dim formMidPointY As Long: formMidPointY = 0
+    Dim widgetTopY As Long: widgetTopY = 0
+    Dim widgetLeftX As Long: widgetLeftX = 0
+    Dim screenEdge As Long: screenEdge = 0
+    
+    On Error GoTo checkScreenEdgeBottom_Error
 
     If (fMain.SunForm.Top + fMain.SunForm.Height) > gblVirtualScreenHeightPixels Then  ' if any part of the form is off screen
         widgetCurrentHeightPx = (SunWidget.Widget.Height / 2 * SunWidget.Zoom) ' pixels
@@ -1929,23 +1952,18 @@ Public Sub mainScreen()
             fMain.SunForm.Top = (gblVirtualScreenHeightPixels - screenEdge) - (widgetCurrentHeightPx / 2)
         End If
     End If
+
+    On Error GoTo 0
+    Exit Sub
+
+checkScreenEdgeBottom_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure checkScreenEdgeBottom of Module Module1"
     
-
-    ' calculate the current hlocation in % of the screen
-    ' store the current hlocation in % of the screen
-'    If gblWidgetPosition = "1" Then
-'        gblhLocationPercPrefValue = CStr(fMain.SunForm.Left / gblVirtualScreenWidthPixels * 100)
-'        gblvLocationPercPrefValue = CStr(fMain.SunForm.Top / gblVirtualScreenHeightPixels * 100)
-'    End If
-
-   On Error GoTo 0
-   Exit Sub
-
-mainScreen_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mainScreen of Module Module1"
-
 End Sub
+
+
+
 
 '---------------------------------------------------------------------------------------
 ' Procedure : checkScreenEdgeRight
