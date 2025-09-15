@@ -653,7 +653,7 @@ Private Sub addImagesToImageList()
     
     'add Resources to the global ImageList
     
-    Cairo.ImageList.AddImage "tenshillings", App.Path & "\Resources\images\Sun.png"
+    Cairo.ImageList.AddImage "sun", App.Path & "\Resources\images\Sun.png"
     
     ' prefs icons
     
@@ -1232,7 +1232,7 @@ Private Sub createRCFormsOnCurrentDisplay()
     
     On Error GoTo createRCFormsOnCurrentDisplay_Error
     
-    If Cairo.ImageList.Exists("tenshillings") Then Set thisSrf = Cairo.ImageList("tenshillings")
+    If Cairo.ImageList.Exists("sun") Then Set thisSrf = Cairo.ImageList("sun")
     
     imageWidth = thisSrf.Width
     imageHeight = thisSrf.Height

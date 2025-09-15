@@ -5027,7 +5027,7 @@ Private Sub sliSkewDegrees_Change()
 
     btnSave.Enabled = True ' enable the save button
     
-    ' pvtAllowSkewChangeFlg prevents the slider altering the skew on the tenshillings widget unless the slider is the active user control.
+    ' pvtAllowSkewChangeFlg prevents the slider altering the skew on the sun widget unless the slider is the active user control.
     ' It does this in order to avoid reciprocal back and forth between the main widget form and the prefs form,
     
     ' ie. the slider slides but does not itself change the widget rotation, that is happening elsewhere
@@ -5975,7 +5975,7 @@ Public Sub sliWidgetSize_Change()
 
     btnSave.Enabled = True ' enable the save button
     
-    ' pvtAllowSizeChangeFlg prevents the slider altering the skew on the tenshillings widget unless the slider is the active user control.
+    ' pvtAllowSizeChangeFlg prevents the slider altering the skew on the sun widget unless the slider is the active user control.
     ' It does this in order to avoid reciprocal back and forth between the main widget form and the prefs form
     
     ' ie. the slider slides but does not itself change the widget size, that is happening elsewhere

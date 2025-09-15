@@ -1850,16 +1850,6 @@ End Sub
 '
 Public Sub mainScreen()
 
-    Dim widgetCurrentHeightPx As Long: widgetCurrentHeightPx = 0
-    Dim widgetCurrentWidthPx As Long: widgetCurrentWidthPx = 0
-    Dim formMidPointY As Long: formMidPointY = 0
-    Dim formMidPointX As Long: formMidPointX = 0
-    Dim widgetBottomY As Long: widgetBottomY = 0
-    Dim widgetTopY As Long: widgetTopY = 0
-    Dim widgetRightX As Long: widgetRightX = 0
-    Dim widgetLeftX As Long: widgetLeftX = 0
-    Dim screenEdge As Long: screenEdge = 0
-
     On Error GoTo mainScreen_Error
 
     ' check for aspect ratio and determine whether it is in portrait or landscape mode

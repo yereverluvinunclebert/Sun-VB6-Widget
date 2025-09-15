@@ -409,7 +409,7 @@ Public Property Let imageWidth(ByVal newValue As Long)
 
 imageWidthLet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property imageWidth of Class Module cwTenShillings"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property imageWidth of Class Module cwSun"
 End Property
 
 '---------------------------------------------------------------------------------------
@@ -429,7 +429,7 @@ Public Property Let imageHeight(ByVal newValue As Long)
 
 imageHeightLet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property imageHeight of Class Module cwTenShillings"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property imageHeight of Class Module cwSun"
 End Property
 
 '---------------------------------------------------------------------------------------
@@ -542,14 +542,14 @@ Private Sub W_Paint(CC As vbRichClient5.cCairoContext, ByVal xAbs As Single, ByV
     ' save the current state created so far
     CC.Save
     
-    ' set the rotation in degrees only for the coming render of the tenshillings image
+    ' set the rotation in degrees only for the coming render of the sun image
     CC.RotateDrawingsDeg SkewDegrees
     
     ' reverse the origin point prior to rotation
     CC.TranslateDrawings reverseOrigin, reverseOrigin
     
-    'render the tenshillings in relation to the reversed translated origin above
-    CC.RenderSurfaceContent "tenshillings", 0, 0, , , , mOpacity
+    'render the sun in relation to the reversed translated origin above
+    CC.RenderSurfaceContent "sun", 0, 0, , , , mOpacity
     
     ' restores to the state saved by a preceding call to CC.Save
     CC.Restore
