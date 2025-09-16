@@ -96,7 +96,7 @@ Public Sub initAndCreateSunForm(ByVal x As Long, ByVal y As Long, Optional ByVal
     Set SunForm = Cairo.WidgetForms.Create(WFFStyleTool, "Sun the " & Caption & " Widget", True, sunFormWidth, sunFormHeight)
     
     ' make the sun form transparent
-    SunForm.WidgetRoot.BackColor = -1
+    If gblFormVisible = "0" Then SunForm.WidgetRoot.BackColor = -1
 
     ' add and create a new sun widget with a name, position and initial size to match the form, first step of that is to run Class_Initialize
     Set SunWidget = SunForm.Widgets.Add(New cwSun, "sun", 1, 1, sunFormWidth, sunFormHeight)
